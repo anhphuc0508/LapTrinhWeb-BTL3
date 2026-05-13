@@ -128,5 +128,17 @@ class ProductDAL {
         $stmt = $this->pdo->prepare("DELETE FROM product_variants WHERE variant_id = ?");
         return $stmt->execute([$variant_id]);
     }
+
+    public function syncProductStock($product_id) {
+    $sql = "UPDATE products p
+            SET p.stock_quantity = (
+                SELECT COALESCE(SUM(stock_quantity), 0)
+                FROM product_variants
+                WHERE product_id = ?
+            )
+            WHERE p.product_id = ?";
+    $stmt = $this->pdo->prepare($sql);
+    return $stmt->execute([$product_id, $product_id]);
+}
 }
 ?>
