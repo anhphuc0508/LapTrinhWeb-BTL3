@@ -72,14 +72,14 @@ class ProductBLL {
     }
 
     public function deleteVariant($variant_id) {
-         $stmt = $this->pdo->prepare("SELECT product_id FROM product_variants WHERE variant_id = ?");
+        $stmt = $this->pdo->prepare("SELECT product_id FROM product_variants WHERE variant_id = ?");
         $stmt->execute([$variant_id]);
         $variant = $stmt->fetch();
         
         $result = $this->dal->deleteVariant($variant_id);
         
         if ($result && $variant) {
-            $this->dal->syncProductStock($variant['product_id']); // Cập nhật lại tồn kho gốc
+            $this->dal->syncProductStock($variant['product_id']); 
         }
         return $result;
     }
