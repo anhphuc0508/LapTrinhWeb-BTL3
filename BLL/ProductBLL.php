@@ -56,11 +56,19 @@ class ProductBLL {
     }
 
     public function addVariant($data) {
-        return $this->dal->syncProductStock($data['product_id']);
+        $result = $this->dal->addVariant($data); 
+        if ($result) {
+            $this->dal->syncProductStock($data['product_id']);
+        }
+        return $result;
     }
 
     public function updateVariant($data) {
-        return $this->dal->syncProductStock($data['product_id']);
+        $result = $this->dal->updateVariant($data); 
+        if ($result) {
+            $this->dal->syncProductStock($data['product_id']);
+        }
+        return $result;
     }
 
     public function deleteVariant($variant_id) {
