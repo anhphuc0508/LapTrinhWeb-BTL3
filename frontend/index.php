@@ -162,7 +162,25 @@ $categories = $bll->getCategories();
                         <?php endif; ?>
                     </tbody>
                 </table>
-            </div>
+            </div> <?php if ($totalPages > 1): ?>
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-end">
+                        <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
+                            <a class="page-link" href="?page=<?= $page - 1 ?>&search=<?= urlencode($search) ?>&category_id=<?= $category_id ?>">Trước</a>
+                        </li>
+
+                        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                            <li class="page-item <?= ($page == $i) ? 'active' : '' ?>">
+                                <a class="page-link" href="?page=<?= $i ?>&search=<?= urlencode($search) ?>&category_id=<?= $category_id ?>"><?= $i ?></a>
+                            </li>
+                        <?php endfor; ?>
+
+                        <li class="page-item <?= ($page >= $totalPages) ? 'disabled' : '' ?>">
+                            <a class="page-link" href="?page=<?= $page + 1 ?>&search=<?= urlencode($search) ?>&category_id=<?= $category_id ?>">Sau</a>
+                        </li>
+                    </ul>
+                </nav>
+            <?php endif; ?>
         </main>
     </div>
 
@@ -212,7 +230,7 @@ $categories = $bll->getCategories();
                         html += '<th>ID</th><th>SKU</th><th>Tên biến thể</th><th>Giá bán</th><th>Tồn kho</th>';
                         html += '</tr></thead><tbody>';
 
-                        // Render các biến thể
+
                         data.forEach(variant => {
                             html += '<tr>';
                             html += `<td>#${variant.variant_id}</td>`;
@@ -225,25 +243,7 @@ $categories = $bll->getCategories();
 
                         html += '</tbody></table></div>';
                         variantContent.innerHTML = html;
-                        <?php if ($totalPages > 1): ?>
-            <nav aria-label="Page navigation" class="mt-4">
-                <ul class="pagination justify-content-end">
-                    <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
-                        <a class="page-link" href="?page=<?= $page - 1 ?>&search=<?= urlencode($search) ?>&category_id=<?= $category_id ?>">Trước</a>
-                    </li>
-                    
-                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                        <li class="page-item <?= ($page == $i) ? 'active' : '' ?>">
-                            <a class="page-link" href="?page=<?= $i ?>&search=<?= urlencode($search) ?>&category_id=<?= $category_id ?>"><?= $i ?></a>
-                        </li>
-                    <?php endfor; ?>
-                    
-                    <li class="page-item <?= ($page >= $totalPages) ? 'disabled' : '' ?>">
-                        <a class="page-link" href="?page=<?= $page + 1 ?>&search=<?= urlencode($search) ?>&category_id=<?= $category_id ?>">Sau</a>
-                    </li>
-                </ul>
-            </nav>
-            <?php endif; ?>
+
                     } else {
                         variantContent.innerHTML = '<div class="alert alert-warning" role="alert">Không có biến thể nào cho sản phẩm này.</div>';
                     }
