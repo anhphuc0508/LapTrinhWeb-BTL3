@@ -12,8 +12,11 @@ class ProductBLL {
 
 
 
-    public function getProducts($search = '') {
-        return $this->dal->getProducts($search);
+    public function getProducts($search = '', $category_id = '', $limit = 10, $offset = 0) {
+        return $this->dal->getProducts($search, $category_id, $limit, $offset);
+    }
+    public function getTotalProducts($search = '', $category_id = '') {
+        return $this->dal->getTotalProducts($search, $category_id);
     }
 
     public function getProductById($id) {

@@ -11,10 +11,23 @@ require_once __DIR__ . '/../BLL/ProductBLL.php';
 $bll = new ProductBLL($pdo);
 
 $search = $_GET['search'] ?? '';
-$products = $bll->getProducts($search);
+$category_id = $_GET['category_id'] ?? '';
+$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+
+$limit = 5;
+$offset = ($page - 1) * $limit;
+
+// Lấy dữ liệu
+$totalProducts = $bll->getTotalProducts($search, $category_id);
+$totalPages = ceil($totalProducts / $limit);
+$products = $bll->getProducts($search, $category_id, $limit, $offset);
+
+
+$categories = $bll->getCategories();
 ?>
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,21 +37,44 @@ $products = $bll->getProducts($search);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../style.css">
     <style>
-        .alert { padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; color: white; font-weight: 500; }
-        .alert-success { background-color: var(--success-color); }
-        .alert-error { background-color: var(--danger-color); }
+        .alert {
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: white;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background-color: var(--success-color);
+        }
+
+        .alert-error {
+            background-color: var(--danger-color);
+        }
     </style>
 </head>
+
 <body>
-    
+
     <div class="app-container">
         <?php include 'sidebar.php'; ?>
 
         <main class="main-content">
             <header class="topbar">
-                <form class="search-bar" method="GET" action="index.php">
-                    <i class="fa-solid fa-search"></i>
-                    <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" placeholder="Tìm kiếm sản phẩm theo tên...">
+                <form class="search-bar" method="GET" action="index.php" style="display: flex; gap: 10px; width: 450px;">
+                    <div style="position: relative; flex: 1;">
+                        <i class="fa-solid fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                        <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" placeholder="Tìm tên SP..." style="width: 100%; padding: 10px 10px 10px 36px; border-radius: 20px; border: 1px solid var(--border-color); outline: none;">
+                    </div>
+                    <select name="category_id" style="padding: 10px 15px; border-radius: 20px; border: 1px solid var(--border-color); outline: none; background: #fff; color: var(--text-muted);" onchange="this.form.submit()">
+                        <option value="">Tất cả danh mục</option>
+                        <?php foreach ($categories as $cat): ?>
+                            <option value="<?= $cat['category_id'] ?>" <?= $category_id == $cat['category_id'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($cat['category_name']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </form>
                 <div class="user-profile">
                     <?php $fullname = !empty($_SESSION['full_name']) ? $_SESSION['full_name'] : ($_SESSION['username'] ?? 'Admin'); ?>
@@ -110,17 +146,19 @@ $products = $bll->getProducts($search);
                                             <button type="submit" class="btn btn-warning text-white btn-sm" title="Nhân bản"><i class="fa-solid fa-copy"></i></button>
                                         </form>
                                         <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-                                        <form method="POST" action="../API/ProductAPI.php" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa?');">
-                                            <input type="hidden" name="action" value="delete">
-                                            <input type="hidden" name="product_id" value="<?= $p['product_id'] ?>">
-                                            <button type="submit" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
-                                        </form>
+                                            <form method="POST" action="../API/ProductAPI.php" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa?');">
+                                                <input type="hidden" name="action" value="delete">
+                                                <input type="hidden" name="product_id" value="<?= $p['product_id'] ?>">
+                                                <button type="submit" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
+                                            </form>
                                         <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
-                            <tr><td colspan="8" class="text-center">Không tìm thấy sản phẩm nào.</td></tr>
+                            <tr>
+                                <td colspan="8" class="text-center">Không tìm thấy sản phẩm nào.</td>
+                            </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -154,48 +192,68 @@ $products = $bll->getProducts($search);
         function showVariants(productId, productName) {
             const variantContent = document.getElementById('variantContent');
             const modalLabel = document.getElementById('variantModalLabel');
-            
+
             modalLabel.textContent = `Biến Thể: ${productName}`;
             variantContent.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Đang tải...</span></div></div>';
-            
+
             // Gửi yêu cầu lấy biến thể qua AJAX
             fetch('../API/ProductAPI.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'action=getVar&product_id=' + productId
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (Array.isArray(data) && data.length > 0) {
-                    let html = '<div class="table-responsive"><table class="table table-sm table-hover table-bordered">';
-                    html += '<thead><tr>';
-                    html += '<th>ID</th><th>SKU</th><th>Tên biến thể</th><th>Giá bán</th><th>Tồn kho</th>';
-                    html += '</tr></thead><tbody>';
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'action=getVar&product_id=' + productId
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (Array.isArray(data) && data.length > 0) {
+                        let html = '<div class="table-responsive"><table class="table table-sm table-hover table-bordered">';
+                        html += '<thead><tr>';
+                        html += '<th>ID</th><th>SKU</th><th>Tên biến thể</th><th>Giá bán</th><th>Tồn kho</th>';
+                        html += '</tr></thead><tbody>';
+
+                        // Render các biến thể
+                        data.forEach(variant => {
+                            html += '<tr>';
+                            html += `<td>#${variant.variant_id}</td>`;
+                            html += `<td>${variant.sku || '-'}</td>`;
+                            html += `<td>${variant.variant_name || '-'}</td>`;
+                            html += `<td>${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(variant.price || 0)}</td>`;
+                            html += `<td>${variant.stock_quantity || 0}</td>`;
+                            html += '</tr>';
+                        });
+
+                        html += '</tbody></table></div>';
+                        variantContent.innerHTML = html;
+                        <?php if ($totalPages > 1): ?>
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-end">
+                    <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
+                        <a class="page-link" href="?page=<?= $page - 1 ?>&search=<?= urlencode($search) ?>&category_id=<?= $category_id ?>">Trước</a>
+                    </li>
                     
-                    // Render các biến thể
-                    data.forEach(variant => {
-                        html += '<tr>';
-                        html += `<td>#${variant.variant_id}</td>`;
-                        html += `<td>${variant.sku || '-'}</td>`;
-                        html += `<td>${variant.variant_name || '-'}</td>`;
-                        html += `<td>${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(variant.price || 0)}</td>`;
-                        html += `<td>${variant.stock_quantity || 0}</td>`;
-                        html += '</tr>';
-                    });
+                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                        <li class="page-item <?= ($page == $i) ? 'active' : '' ?>">
+                            <a class="page-link" href="?page=<?= $i ?>&search=<?= urlencode($search) ?>&category_id=<?= $category_id ?>"><?= $i ?></a>
+                        </li>
+                    <?php endfor; ?>
                     
-                    html += '</tbody></table></div>';
-                    variantContent.innerHTML = html;
-                } else {
-                    variantContent.innerHTML = '<div class="alert alert-warning" role="alert">Không có biến thể nào cho sản phẩm này.</div>';
-                }
-            })
-            .catch(error => {
-                console.error('Lỗi:', error);
-                variantContent.innerHTML = '<div class="alert alert-danger" role="alert">Lỗi khi tải biến thể!</div>';
-            });
+                    <li class="page-item <?= ($page >= $totalPages) ? 'disabled' : '' ?>">
+                        <a class="page-link" href="?page=<?= $page + 1 ?>&search=<?= urlencode($search) ?>&category_id=<?= $category_id ?>">Sau</a>
+                    </li>
+                </ul>
+            </nav>
+            <?php endif; ?>
+                    } else {
+                        variantContent.innerHTML = '<div class="alert alert-warning" role="alert">Không có biến thể nào cho sản phẩm này.</div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi:', error);
+                    variantContent.innerHTML = '<div class="alert alert-danger" role="alert">Lỗi khi tải biến thể!</div>';
+                });
         }
     </script>
 </body>
+
 </html>
