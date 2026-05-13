@@ -1,0 +1,45 @@
+1. Tổng quan chức năng admin
+
+Trang admin quản lý sản phẩm nên có các nhóm chức năng sau:
+
+Quản lý sản phẩm
+
+Admin có thể:
+
+Thêm sản phẩm.
+Sửa thông tin sản phẩm.
+Xóa mềm sản phẩm.
+Khôi phục sản phẩm đã xóa.
+Xóa vĩnh viễn nếu có quyền cao.
+Bật/tắt trạng thái hiển thị.
+Đánh dấu sản phẩm nổi bật.
+Sắp xếp sản phẩm theo:
+Tên.
+Giá.
+Ngày tạo.
+Ngày cập nhật.
+Tồn kho.
+Lượt bán.
+Thứ tự tùy chỉnh.
+Tìm kiếm theo tên, SKU, barcode, danh mục, thương hiệu.
+Lọc theo trạng thái, danh mục, thương hiệu, khoảng giá, tồn kho.
+Tính năng nâng cao
+
+Nên có thêm:
+
+Quản lý biến thể sản phẩm: size, màu, dung lượng, chất liệu.
+Quản lý SKU riêng cho từng biến thể.
+Quản lý tồn kho theo kho hàng.
+Lịch sử nhập/xuất kho.
+Lịch sử thay đổi giá.
+Quản lý ảnh sản phẩm và ảnh theo từng biến thể.
+Quản lý SEO: slug, meta title, meta description.
+Import/export Excel hoặc CSV.
+Ghi log thao tác admin.
+Phân quyền admin.
+Nhân bản sản phẩm.
+Duyệt sản phẩm trước khi hiển thị.
+Cảnh báo sắp hết hàng.
+Quản lý sản phẩm liên quan.
+Quản lý combo/bundle sản phẩm.
+Quản lý khuyến mãi theo sản phẩm, danh mục hoặc thương hiệu.
