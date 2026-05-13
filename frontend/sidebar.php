@@ -5,7 +5,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
 <aside class="sidebar">
     <div class="sidebar-header">
-        <h2><i class="fa-solid fa-cube"></i> Trang Quản Lý</h2>
+        <h2>
+            <i class="fa-solid fa-cube"></i> Trang Quản Lý</h2>
     </div>
     <ul class="nav-links">
         <li>

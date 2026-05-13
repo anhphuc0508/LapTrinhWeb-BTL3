@@ -164,7 +164,7 @@ $categories = $bll->getCategories();
                 </table>
             </div> <?php if ($totalPages > 1): ?>
                 <nav aria-label="Page navigation" class="mt-4">
-                    <ul class="pagination justify-content-end">
+                    <ul class="pagination justify-content-center">
                         <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
                             <a class="page-link" href="?page=<?= $page - 1 ?>&search=<?= urlencode($search) ?>&category_id=<?= $category_id ?>">Trước</a>
                         </li>

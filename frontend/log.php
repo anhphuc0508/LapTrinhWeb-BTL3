@@ -1,9 +1,15 @@
 <?php
+require_once __DIR__ . '/../CONFIG/db.php'; 
+
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit;
+}
 require_once __DIR__ . '/../BLL/LogBLL.php';
 $logBll = new LogBLL($pdo);
 
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
-$limit = 10; // Hiển thị 10 dòng lịch sử mỗi trang
+$limit = 10;
 $offset = ($page - 1) * $limit;
 
 $totalLogs = $logBll->getTotalLogs();
@@ -88,9 +94,9 @@ function getActionBadge($action) {
                         <?php endif; ?>
                     </tbody>
                 </table>
-            </div></div> <?php if ($totalPages > 1): ?>
+            </div> <?php if ($totalPages > 1): ?>
             <nav aria-label="Page navigation" class="mt-4">
-                <ul class="pagination justify-content-end">
+                <ul class="pagination justify-content-center">
                     <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
                         <a class="page-link" href="?page=<?= $page - 1 ?>">Trước</a>
                     </li>
