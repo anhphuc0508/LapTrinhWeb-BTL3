@@ -90,3 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: ../frontend/product_form.php?product_id=' . $product_id);
             exit;
         }
+    }
+}
+
+    
