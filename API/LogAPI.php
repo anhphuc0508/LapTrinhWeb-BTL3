@@ -48,7 +48,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $result = $bll->addVariant($_POST);
                 if ($result) {
                     $_SESSION['success'] = "Thêm biến thể thành công!";
-                    // Ghi log thêm biến thể
                     $logBll->addLog($user_id, 'ADD', 'Variant', $_POST['product_id'], "Thêm biến thể mới cho sản phẩm ID: " . $_POST['product_id']);
                 } else {
                     $_SESSION['error'] = "Thêm biến thể thất bại!";
@@ -84,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $bll->deleteVariant($variant_id);
             $_SESSION['success'] = "Xóa biến thể thành công!";
             
-            // Ghi log xóa biến thể
+         
             $logBll->addLog($user_id, 'DELETE', 'Variant', $variant_id, "Xóa biến thể ID: " . $variant_id . " của sản phẩm ID: " . $product_id);
             
             header('Location: ../frontend/product_form.php?product_id=' . $product_id);

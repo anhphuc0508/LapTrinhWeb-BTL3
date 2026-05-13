@@ -141,13 +141,11 @@ class ProductDAL
         ";
         $params = [];
 
-        // Lọc theo tên
         if (!empty($search)) {
             $sql .= " AND p.product_name LIKE :search";
             $params[':search'] = "%$search%";
         }
         
-        // Lọc theo danh mục
         if (!empty($category_id)) {
             $sql .= " AND p.category_id = :category_id";
             $params[':category_id'] = $category_id;

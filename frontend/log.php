@@ -1,16 +1,15 @@
 <?php
-require_once __DIR__ . '/../CONFIG/db.php';
-
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
-    exit;
-}
-
 require_once __DIR__ . '/../BLL/LogBLL.php';
 $logBll = new LogBLL($pdo);
-$logs = $logBll->getLogs();
 
-// Hàm hỗ trợ hiển thị màu sắc cho các loại hành động
+$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+$limit = 10; // Hiển thị 10 dòng lịch sử mỗi trang
+$offset = ($page - 1) * $limit;
+
+$totalLogs = $logBll->getTotalLogs();
+$totalPages = ceil($totalLogs / $limit);
+$logs = $logBll->getLogs($limit, $offset);
+
 function getActionBadge($action) {
     $class = 'bg-secondary';
     if ($action === 'ADD') $class = 'bg-success';
@@ -89,7 +88,25 @@ function getActionBadge($action) {
                         <?php endif; ?>
                     </tbody>
                 </table>
-            </div>
+            </div></div> <?php if ($totalPages > 1): ?>
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-end">
+                    <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
+                        <a class="page-link" href="?page=<?= $page - 1 ?>">Trước</a>
+                    </li>
+                    
+                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                        <li class="page-item <?= ($page == $i) ? 'active' : '' ?>">
+                            <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
+                        </li>
+                    <?php endfor; ?>
+                    
+                    <li class="page-item <?= ($page >= $totalPages) ? 'disabled' : '' ?>">
+                        <a class="page-link" href="?page=<?= $page + 1 ?>">Sau</a>
+                    </li>
+                </ul>
+            </nav>
+            <?php endif; ?>
         </main>
     </div>
 </body>

@@ -13,8 +13,12 @@ class LogBLL {
         return $this->dal->addLog($user_id, $action_type, $entity_type, $entity_id, $description);
     }
     
-    public function getLogs() {
-        return $this->dal->getLogs();
+    public function getLogs($limit = 10, $offset = 0) {
+        return $this->dal->getLogs($limit, $offset);
+    }
+    
+    public function getTotalLogs() {
+        return $this->dal->getTotalLogs();
     }
 }
 ?>
