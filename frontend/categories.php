@@ -9,6 +9,14 @@ if (!isset($_SESSION['user_id'])) {
 require_once __DIR__ . '/../BLL/CategoryBLL.php';
 $bll = new CategoryBLL($pdo);
 $categories = $bll->getCategories();
+
+$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+$limit = 10;
+$offset = ($page - 1) * $limit;
+
+$totalLogs = $bll->getCategoryTotal();
+$totalPages = ceil($totalLogs / $limit);
+$logs = $bll->getCategories($limit, $offset);
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -225,7 +233,25 @@ $categories = $bll->getCategories();
                         <?php endif; ?>
                     </tbody>
                 </table>
-            </div>
+            </div><?php if ($totalPages > 1): ?>
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
+                        <a class="page-link" href="?page=<?= $page - 1 ?>">Trước</a>
+                    </li>
+                    
+                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                        <li class="page-item <?= ($page == $i) ? 'active' : '' ?>">
+                            <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
+                        </li>
+                    <?php endfor; ?>
+                    
+                    <li class="page-item <?= ($page >= $totalPages) ? 'disabled' : '' ?>">
+                        <a class="page-link" href="?page=<?= $page + 1 ?>">Sau</a>
+                    </li>
+                </ul>
+            </nav>
+            <?php endif; ?>
         </main>
     </div>
 

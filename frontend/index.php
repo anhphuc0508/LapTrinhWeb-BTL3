@@ -17,12 +17,10 @@ $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] :
 $limit = 5;
 $offset = ($page - 1) * $limit;
 
-// Lấy dữ liệu
+
 $totalProducts = $bll->getTotalProducts($search, $category_id);
 $totalPages = ceil($totalProducts / $limit);
 $products = $bll->getProducts($search, $category_id, $limit, $offset);
-
-
 $categories = $bll->getCategories();
 ?>
 <!DOCTYPE html>

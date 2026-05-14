@@ -230,7 +230,6 @@ $fullname = !empty($_SESSION['full_name']) ? $_SESSION['full_name'] : ($_SESSION
         </main>
     </div>
 
-    <!-- Modal Sửa Biến Thể -->
     <div class="modal fade" id="editVariantModal" tabindex="-1" aria-labelledby="editVariantModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
