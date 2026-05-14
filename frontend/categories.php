@@ -8,15 +8,14 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once __DIR__ . '/../BLL/CategoryBLL.php';
 $bll = new CategoryBLL($pdo);
-$categories = $bll->getCategories();
-
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
-$limit = 10;
+$limit = 10; // 1 trang hiện 10 danh mục
 $offset = ($page - 1) * $limit;
 
-$totalLogs = $bll->getCategoryTotal();
-$totalPages = ceil($totalLogs / $limit);
-$logs = $bll->getCategories($limit, $offset);
+$totalCategories = $bll->getCategoryTotal();
+$totalPages = ceil($totalCategories / $limit);
+
+$categories = $bll->getCategories($limit, $offset);
 ?>
 <!DOCTYPE html>
 <html lang="vi">
