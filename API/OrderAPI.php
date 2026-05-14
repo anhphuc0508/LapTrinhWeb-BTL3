@@ -3,17 +3,17 @@ require_once __DIR__ . '/../CONFIG/db.php';
 require_once __DIR__ . '/../BLL/OrderBLL.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    header('Content-Type: application/json');
     $action = $_POST['action'] ?? '';
     $bll = new OrderBLL($pdo);
-    
+
     try {
         if ($action === 'get_details') {
+            header('Content-Type: application/json'); 
             $order_id = $_POST['order_id'] ?? null;
             if ($order_id) {
                 $order = $bll->getOrderById($order_id);
                 $details = $bll->getOrderDetail($order_id);
-                
+
                 if ($order) {
                     echo json_encode(['status' => 'success', 'order' => $order, 'details' => $details]);
                 } else {
@@ -23,21 +23,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo json_encode(['status' => 'error', 'message' => 'Missing order ID']);
             }
             exit;
-        }
+        } 
+        elseif ($action === 'updateStatus') {
+            $order_id = $_POST['order_id'] ?? null;
+            $status = $_POST['status'] ?? '';
+            $user_id = $_SESSION['user_id'] ?? null;
+
+            if ($order_id && $status) {
+                if ($bll->updateOrderStatus($order_id, $status, $user_id)) {
+                    $_SESSION['success'] = "Cập nhật trạng thái đơn hàng thành công!";
+                } else {
+                    $_SESSION['error'] = "Cập nhật thất bại!";
+                }
+            }
+            header('Location: ../frontend/orders.php');
+            exit;
+        } 
         else {
+            header('Content-Type: application/json');
             echo json_encode(['status' => 'error', 'message' => 'Invalid action']);
             exit;
         }
-        
     } catch (Exception $e) {
+        header('Content-Type: application/json');
         echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         exit;
     }
 } elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $action = $_GET['action'] ?? '';
     $bll = new OrderBLL($pdo);
-    
+
     if ($action === 'get_orders') {
+        header('Content-Type: application/json');
         try {
             $orders = $bll->getOrder();
             echo json_encode(['status' => 'success', 'data' => $orders]);

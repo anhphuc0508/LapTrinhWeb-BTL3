@@ -19,9 +19,9 @@ class LogDAL {
                 FROM activity_logs l 
                 LEFT JOIN users u ON l.user_id = u.user_id 
                 ORDER BY l.created_at DESC
-                LIMIT :limit OFFSET :offset"; // 1. Sửa lại chỗ này (viết dính liền :offset)
+                LIMIT :limit OFFSET :offset"; 
         
-        $stmt = $this->pdo->prepare($sql);    // 2. Phải dùng prepare() thay vì query()
+        $stmt = $this->pdo->prepare($sql);    
         $stmt->bindValue(':limit', (int) $limit , PDO::PARAM_INT);
         $stmt->bindValue(':offset', (int) $offset, PDO::PARAM_INT);
         $stmt->execute();

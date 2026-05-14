@@ -29,7 +29,11 @@ class OrderDAL {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-   
+    public function updateOrderStatus($order_id, $status) {
+        $stmt = $this->pdo->prepare("UPDATE orders SET status = ? WHERE order_id = ?");
+        return $stmt->execute([$status, $order_id]);
+    }
+    
     public function getOrderDetail($order_id) {
         $sql = 'SELECT od.*, p.product_name, p.unit_price as current_price
                 FROM order_details as od

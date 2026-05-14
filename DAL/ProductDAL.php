@@ -8,7 +8,7 @@ class ProductDAL
         $this->pdo = $pdo;
     }
 
-   
+
 
     public function getProductById($id)
     {
@@ -131,7 +131,8 @@ class ProductDAL
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([$product_id, $product_id]);
     }
-    public function getProducts($search = '', $category_id = '', $limit = 10, $offset = 0) {
+    public function getProducts($search = '', $category_id = '', $limit = 10, $offset = 0)
+    {
         $sql = "
             SELECT p.*, c.category_name, s.supplier_name
             FROM products p
@@ -145,7 +146,7 @@ class ProductDAL
             $sql .= " AND p.product_name LIKE :search";
             $params[':search'] = "%$search%";
         }
-        
+
         if (!empty($category_id)) {
             $sql .= " AND p.category_id = :category_id";
             $params[':category_id'] = $category_id;
@@ -154,7 +155,7 @@ class ProductDAL
         $sql .= " ORDER BY p.product_id DESC LIMIT :limit OFFSET :offset";
 
         $stmt = $this->pdo->prepare($sql);
-        
+
         foreach ($params as $key => $val) {
             $stmt->bindValue($key, $val);
         }
@@ -165,7 +166,8 @@ class ProductDAL
         return $stmt->fetchAll();
     }
 
-    public function getTotalProducts($search = '', $category_id = '') {
+    public function getTotalProducts($search = '', $category_id = '')
+    {
         $sql = "SELECT COUNT(*) FROM products p WHERE 1=1";
         $params = [];
 

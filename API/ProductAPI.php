@@ -6,7 +6,7 @@ require_once __DIR__ . '/../BLL/LogBLL.php'; // 1. Gọi thêm file LogBLL
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     $bll = new ProductBLL($pdo);
-    $logBll = new LogBLL($pdo); // 2. Khởi tạo LogBLL
+    $logBll = new LogBLL($pdo); 
     $user_id = $_SESSION['user_id'] ?? null; 
 
     try {
