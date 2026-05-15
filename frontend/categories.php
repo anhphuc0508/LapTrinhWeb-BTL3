@@ -437,7 +437,6 @@ $categories = $bll->getCategories($limit, $offset);
                 .catch(() => showToast('Lỗi kết nối server!', 'error'));
         }
 
-        // =================== SEARCH / FILTER ===================
         function filterCategories() {
             const query = document.getElementById('searchInput').value.toLowerCase();
             const rows = document.querySelectorAll('.category-row');
