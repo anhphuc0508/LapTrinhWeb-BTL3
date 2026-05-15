@@ -146,7 +146,6 @@ $fullname = !empty($_SESSION['full_name']) ? $_SESSION['full_name'] : ($_SESSION
             <div class="form-container mt-4">
                 <h3 class="mb-4"><i class="fa-solid fa-shapes"></i> Quản Lý Biến Thể Sản Phẩm</h3>
 
-                <!-- Danh sách biến thể -->
                 <div class="mb-4">
                     <h5>Danh sách biến thể hiện tại:</h5>
                     <div class="table-responsive">
@@ -193,7 +192,6 @@ $fullname = !empty($_SESSION['full_name']) ? $_SESSION['full_name'] : ($_SESSION
                     </div>
                 </div>
 
-                <!-- Form thêm biến thể -->
                 <div class="border-top pt-4">
                     <h5 class="mb-3">Thêm biến thể mới:</h5>
                     <form method="POST" action="../API/ProductAPI.php">

@@ -383,8 +383,7 @@ $laptopCount = $productBll->countProductsByCategoryName('Laptop');
 
                                 $revenueM = round($top['total_revenue'] / 1000000, 1) . 'M';
 
-                                // Giả lập tỉ lệ tăng trưởng (Vì chưa có logic lưu số liệu tháng trước)
-                                $trend = rand(5, 20);
+                             
                             ?>
 
                                 <div class="product-row">
@@ -403,9 +402,7 @@ $laptopCount = $productBll->countProductsByCategoryName('Laptop');
                                     <div class="product-revenue">
                                         <div class="amount"><?= $revenueM ?></div>
                                     </div>
-                                    <div style="text-align: right; color: var(--success-color); font-weight: 600;">
-                                        ↑ <?= $trend ?>%
-                                    </div>
+                                   
                                 </div>
 
                             <?php endforeach; ?>

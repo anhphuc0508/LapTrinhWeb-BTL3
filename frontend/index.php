@@ -182,7 +182,6 @@ $categories = $bll->getCategories();
         </main>
     </div>
 
-    <!-- Modal Xem Biến Thể -->
     <div class="modal fade" id="variantModal" tabindex="-1" aria-labelledby="variantModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
