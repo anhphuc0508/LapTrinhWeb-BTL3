@@ -187,4 +187,34 @@ class ProductDAL
         $stmt->execute();
         return $stmt->fetchColumn();
     }
+    public function getTopSellingProducts($limit = 5) {
+        $sql = "
+            SELECT p.product_id, p.product_name, c.category_name, 
+                   SUM(od.quantity) as total_sold, 
+                   SUM(od.quantity * od.unit_price) as total_revenue
+            FROM order_details od
+            JOIN products p ON od.product_id = p.product_id
+            LEFT JOIN categories c ON p.category_id = c.category_id
+            JOIN orders o ON od.order_id = o.order_id
+            WHERE o.status = 'Hoàn thành'
+            GROUP BY p.product_id, p.product_name, c.category_name
+            ORDER BY total_sold DESC
+            LIMIT :limit
+        ";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function countProductsByCategoryName($category_name) {
+        $sql = "SELECT COUNT(p.product_id) 
+                FROM products p 
+                JOIN categories c ON c.category_id = p.category_id 
+                WHERE c.category_name = ?";
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$category_name]);
+        
+        return $stmt->fetchColumn() ?: 0;
+    }
 }

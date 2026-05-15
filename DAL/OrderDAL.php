@@ -69,5 +69,16 @@ class OrderDAL {
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([$order_id, $order_id]);
     }
+    public function getTotalOrder(){
+        $sql = "SELECT COUNT(*) FROM orders";
+        $stmt =$this->pdo->query($sql); 
+        return $stmt->fetchColumn();
+    }
+    public function getTotalRevenue() {
+        $sql = "SELECT SUM(total_amount) FROM orders WHERE status = 'Hoàn thành'";
+        $stmt = $this->pdo->query($sql);
+        return $stmt->fetchColumn() ?: 0; // Nếu NULL (chưa có đơn nào) thì trả về 0
+    }
+   
 }
 ?>

@@ -1,5 +1,4 @@
 <?php
-// Lấy tên file hiện tại đang mở trên trình duyệt (ví dụ: 'index.php', 'categories.php',...)
 $current_page = basename($_SERVER['PHP_SELF']);
 ?>
 
@@ -10,20 +9,47 @@ $current_page = basename($_SERVER['PHP_SELF']);
     </div>
     <ul class="nav-links">
         <li>
+            <a href="dashboard.php" class="<?= ($current_page == 'dashboard.php') ? 'active' : '' ?>">
+                <i class="fa-solid fa-chart-line"></i> Tổng Quan
+            </a>
+        </li>
+        <li>
             <a href="index.php" class="<?= ($current_page == 'index.php' || $current_page == 'product_form.php') ? 'active' : '' ?>">
                 <i class="fa-solid fa-box"></i> Sản phẩm
             </a>
         </li>
+        
         <li>
             <a href="categories.php" class="<?= ($current_page == 'categories.php') ? 'active' : '' ?>">
                 <i class="fa-solid fa-tags"></i> Danh mục
             </a>
         </li>
+       
         <li>
             <a href="orders.php" class="<?= ($current_page == 'orders.php') ? 'active' : '' ?>">
                 <i class="fa-solid fa-cart-shopping"></i> Đơn hàng
             </a>
         </li>
+
+        <li>
+            <a href="customers.php" class="<?= ($current_page == 'customers.php') ? 'active' : '' ?>">
+                <i class="fa-solid fa-users"></i> Khách hàng
+            </a>
+        </li>
+        <li>
+            <a href="suppliers.php" class="<?= ($current_page == 'suppliers.php') ? 'active' : '' ?>">
+                <i class="fa-solid fa-house-chimney"></i> Nhà cung cấp
+            </a>
+        </li>
+
+        <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+        <li>
+            <a href="users.php" class="<?= ($current_page == 'users.php') ? 'active' : '' ?>">
+                <i class="fa-solid fa-user-shield"></i> Tài khoản
+            </a>
+        </li>
+        <?php endif; ?>
+
         <li>
             <a href="log.php" class="<?= ($current_page == 'log.php') ? 'active' : '' ?>">
                 <i class="fa-solid fa-clock-rotate-left"></i> Lịch sử

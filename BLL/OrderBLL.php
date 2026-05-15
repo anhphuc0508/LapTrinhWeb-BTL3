@@ -69,5 +69,12 @@ class OrderBLL
         }
         return $result;
     }
+    public function getTotalOrder(){
+        return $this->dal->getTotalOrder();
+    }
+    public function getTotalRevenue() {
+        return $this->dal->getTotalRevenue();
+    }
+    
 }
 ?>

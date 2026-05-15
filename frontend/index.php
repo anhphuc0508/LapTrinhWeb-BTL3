@@ -212,7 +212,6 @@ $categories = $bll->getCategories();
             modalLabel.textContent = `Biến Thể: ${productName}`;
             variantContent.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Đang tải...</span></div></div>';
 
-            // Gửi yêu cầu lấy biến thể qua AJAX
             fetch('../API/ProductAPI.php', {
                     method: 'POST',
                     headers: {
@@ -227,7 +226,6 @@ $categories = $bll->getCategories();
                         html += '<thead><tr>';
                         html += '<th>ID</th><th>SKU</th><th>Tên biến thể</th><th>Giá bán</th><th>Tồn kho</th>';
                         html += '</tr></thead><tbody>';
-
 
                         data.forEach(variant => {
                             html += '<tr>';

@@ -279,8 +279,7 @@ $categories = $bll->getCategories($limit, $offset);
         </div>
     </div>
 
-    <!-- Confirm Delete Modal -->
-    <div class="modal-overlay" id="deleteModal">
+        <div class="modal-overlay" id="deleteModal">
         <div class="modal-content" style="max-width: 450px;">
             <div class="modal-header">
                 <h5><i class="fa-solid fa-triangle-exclamation" style="color: var(--danger-color); margin-right: 8px;"></i> Xác nhận xóa</h5>
@@ -309,7 +308,6 @@ $categories = $bll->getCategories($limit, $offset);
         const API_URL = '../API/CategoryAPI.php';
         let deleteTargetId = null;
 
-        // =================== TOAST ===================
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -317,7 +315,6 @@ $categories = $bll->getCategories($limit, $offset);
             setTimeout(() => { toast.classList.remove('show'); }, 3000);
         }
 
-        // =================== ADD ===================
         function openAddModal() {
             document.getElementById('addCategoryName').value = '';
             document.getElementById('addDescription').value = '';
@@ -358,7 +355,6 @@ $categories = $bll->getCategories($limit, $offset);
                 .catch(() => showToast('Lỗi kết nối server!', 'error'));
         }
 
-        // =================== INLINE EDIT ===================
         function startEdit(id, name, desc) {
             // Hide all other edit modes first
             document.querySelectorAll('.category-row').forEach(row => {
@@ -409,7 +405,6 @@ $categories = $bll->getCategories($limit, $offset);
                 .catch(() => showToast('Lỗi kết nối server!', 'error'));
         }
 
-        // =================== DELETE ===================
         function deleteCategory(id, name) {
             deleteTargetId = id;
             document.getElementById('deleteCatName').textContent = name;
@@ -459,19 +454,16 @@ $categories = $bll->getCategories($limit, $offset);
             document.getElementById('totalCategories').textContent = visibleCount;
         }
 
-        // Keyboard shortcut: Enter to submit in modal
         document.getElementById('addCategoryName').addEventListener('keydown', function(e) {
             if (e.key === 'Enter') addCategory();
         });
 
-        // Close modals on overlay click
         document.querySelectorAll('.modal-overlay').forEach(modal => {
             modal.addEventListener('click', function(e) {
                 if (e.target === this) this.classList.remove('show');
             });
         });
 
-        // Close modals on Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 document.querySelectorAll('.modal-overlay.show').forEach(m => m.classList.remove('show'));

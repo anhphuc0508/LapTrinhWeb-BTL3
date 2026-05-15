@@ -86,5 +86,12 @@ class ProductBLL {
         }
         return $result;
     }
+    public function getTopSellingProducts($limit = 5) {
+        return $this->dal->getTopSellingProducts($limit);
+    }
+    
+    public function countProductsByCategoryName($category_name) {
+        return $this->dal->countProductsByCategoryName($category_name);
+    }
 }
 ?>
