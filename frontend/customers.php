@@ -17,6 +17,20 @@ $offset = ($page - 1) * $limit;
 $totalCustomers = $bll->getTotalCustomers($search);
 $totalPages = ceil($totalCustomers / $limit);
 $customers = $bll->getCustomers($search, $limit, $offset);
+
+function getCustomerRankBadge($total_spent) {
+    if ($total_spent >= 50000000) { // Trên 50 triệu
+        return '<span class="badge bg-danger"><i class="fa-solid fa-crown"></i> VIP</span>';
+    } elseif ($total_spent >= 20000000) { 
+        return '<span class="badge bg-warning text-dark"><i class="fa-solid fa-medal"></i> Vàng</span>';
+    } elseif ($total_spent >= 5000000) { 
+        return '<span class="badge bg-secondary"><i class="fa-solid fa-star"></i> Bạc</span>';
+    } elseif ($total_spent > 0) { 
+        return '<span class="badge" style="background-color: #cd7f32;"><i class="fa-solid fa-award"></i> Đồng</span>';
+    }
+    // Chưa mua đơn nào
+    return '<span class="badge bg-light text-dark border">Khách mới</span>'; 
+}
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -73,8 +87,7 @@ $customers = $bll->getCustomers($search, $limit, $offset);
                             <th>Mã KH</th>
                             <th>Khách hàng</th>
                             <th>Liên hệ</th>
-                            <th>Địa chỉ</th>
-                            <th>Thao tác</th>
+                            <th>Chi tiêu & Hạng</th> <th>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -94,9 +107,18 @@ $customers = $bll->getCustomers($search, $limit, $offset);
                                         <div class="text-muted small"><i class="fa-solid fa-phone me-1"></i> <?= htmlspecialchars($c['phone'] ?? 'Chưa cập nhật') ?></div>
                                         <div class="text-muted small"><i class="fa-solid fa-envelope me-1"></i> <?= htmlspecialchars($c['email'] ?? 'Chưa cập nhật') ?></div>
                                     </td>
-                                    <td style="max-width: 250px;" class="text-truncate" title="<?= htmlspecialchars($c['address']) ?>">
-                                        <?= htmlspecialchars($c['address'] ?? '—') ?>
+                                    
+                                    <td>
+                                        <div class="mb-1"><?= getCustomerRankBadge($c['total_spent']) ?></div>
+                                        <div class="small fw-bold text-success mt-1">
+                                            <?= number_format($c['total_spent'], 0, ',', '.') ?> đ
+                                        </div>
+                                        <div class="text-muted small" style="font-size: 11px;">
+                                            Đã mua: <?= $c['total_orders'] ?> đơn hàng
+                                        </div>
                                     </td>
+
+                                    <td class="action-btns">
                                     <td class="action-btns">
                                         <button class="btn btn-icon" title="Sửa thông tin" onclick='editCustomer(<?= json_encode($c) ?>)'>
                                             <i class="fa-solid fa-pen"></i>

@@ -7,16 +7,22 @@ class CustomerDAL {
     }
 
     public function getCustomers($search = '', $limit = 10, $offset = 0) {
-        $sql = "SELECT * FROM customers WHERE 1=1";
+        $sql = "
+            SELECT c.*, 
+                   COUNT(o.order_id) as total_orders, 
+                   COALESCE(SUM(o.total_amount), 0) as total_spent
+            FROM customers c
+            LEFT JOIN orders o ON c.customer_id = o.customer_id AND o.status = 'Hoàn thành'
+            WHERE 1=1
+        ";
         $params = [];
 
         if (!empty($search)) {
-            // Tìm kiếm theo tên hoặc số điện thoại
-            $sql .= " AND (customer_name LIKE :search OR phone LIKE :search)";
+            $sql .= " AND (c.customer_name LIKE :search OR c.phone LIKE :search)";
             $params[':search'] = "%$search%";
         }
 
-        $sql .= " ORDER BY customer_id DESC LIMIT :limit OFFSET :offset";
+        $sql .= " GROUP BY c.customer_id ORDER BY c.customer_id DESC LIMIT :limit OFFSET :offset";
 
         $stmt = $this->pdo->prepare($sql);
         foreach ($params as $key => $val) {

@@ -19,11 +19,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </a>
         </li>
         
-        <li>
-            <a href="categories.php" class="<?= ($current_page == 'categories.php') ? 'active' : '' ?>">
-                <i class="fa-solid fa-tags"></i> Danh mục
-            </a>
-        </li>
+        
        
         <li>
             <a href="orders.php" class="<?= ($current_page == 'orders.php') ? 'active' : '' ?>">

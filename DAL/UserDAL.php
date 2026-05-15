@@ -90,13 +90,12 @@ class UserDAL {
     }
 
     public function deleteUser($id) {
-        // Kiểm tra để không xóa tài khoản admin duy nhất
         $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM users WHERE role = 'admin'");
         $stmt->execute();
         $adminCount = $stmt->fetchColumn();
 
         if ($adminCount <= 1) {
-            return false; // Không cho xóa admin cuối cùng
+            return false; 
         }
 
         $stmt = $this->pdo->prepare("DELETE FROM users WHERE user_id = ?");

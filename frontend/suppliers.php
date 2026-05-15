@@ -17,6 +17,19 @@ $offset = ($page - 1) * $limit;
 $totalSuppliers = $bll->getTotalSuppliers($search);
 $totalPages = ceil($totalSuppliers / $limit);
 $suppliers = $bll->getSuppliers($search, $limit, $offset);
+
+
+function getSupplierStatusBadge($total_products, $total_stock) {
+    if ($total_products == 0) {
+        return '<span class="badge bg-secondary"><i class="fa-solid fa-link-slash"></i> Chưa hợp tác</span>';
+    } elseif ($total_stock == 0) {
+        return '<span class="badge bg-danger"><i class="fa-solid fa-triangle-exclamation"></i> Đứt hàng</span>';
+    } elseif ($total_stock < 10) {
+        return '<span class="badge bg-warning text-dark"><i class="fa-solid fa-boxes-stacked"></i> Sắp hết hàng</span>';
+    } else {
+        return '<span class="badge bg-success"><i class="fa-solid fa-check-circle"></i> Đang cung cấp</span>';
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -74,7 +87,7 @@ $suppliers = $bll->getSuppliers($search, $limit, $offset);
                             <th>Nhà Cung Cấp</th>
                             <th>Liên hệ</th>
                             <th>Địa chỉ</th>
-                            <th>Thao tác</th>
+                            <th>Quy mô cung cấp</th> <th>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -98,9 +111,18 @@ $suppliers = $bll->getSuppliers($search, $limit, $offset);
                                     <td style="max-width: 250px;" class="text-truncate" title="<?= htmlspecialchars($s['address'] ?? '') ?>">
                                         <?= htmlspecialchars($s['address'] ?? '—') ?>
                                     </td>
-                                    <td style="max-width: 250px;" class="text-truncate" title="<?= htmlspecialchars($s['address'] ?? '') ?>">
-                                        <?= htmlspecialchars($s['address'] ?? '—') ?>
+                                    
+                                    <td>
+                                        <div class="mb-1"><?= getSupplierStatusBadge($s['total_products'], $s['total_stock']) ?></div>
+                                        <div class="small fw-bold text-primary mt-1">
+                                            <?= $s['total_products'] ?> mặt hàng
+                                        </div>
+                                        <div class="text-muted small" style="font-size: 11px;">
+                                            Tồn kho: <?= $s['total_stock'] ?> đơn vị
+                                        </div>
                                     </td>
+
+                                    <td class="action-btns">
                                     <td class="action-btns">
                                         <button class="btn btn-icon" title="Sửa thông tin" onclick='editSupplier(<?= json_encode($s) ?>)'>
                                             <i class="fa-solid fa-pen"></i>

@@ -7,16 +7,22 @@ class SupplierDAL {
     }
 
     public function getSuppliers($search = '', $limit = 10, $offset = 0) {
-        $sql = "SELECT * FROM suppliers WHERE 1=1";
+        $sql = "
+            SELECT s.*, 
+                   COUNT(p.product_id) as total_products, 
+                   COALESCE(SUM(p.stock_quantity), 0) as total_stock
+            FROM suppliers s
+            LEFT JOIN products p ON s.supplier_id = p.supplier_id
+            WHERE 1=1
+        ";
         $params = [];
 
         if (!empty($search)) {
-            // Tìm kiếm theo tên nhà cung cấp hoặc số điện thoại
-            $sql .= " AND (supplier_name LIKE :search OR phone LIKE :search)";
+            $sql .= " AND (s.supplier_name LIKE :search OR s.phone LIKE :search)";
             $params[':search'] = "%$search%";
         }
 
-        $sql .= " ORDER BY supplier_id DESC LIMIT :limit OFFSET :offset";
+        $sql .= " GROUP BY s.supplier_id ORDER BY s.supplier_id DESC LIMIT :limit OFFSET :offset";
 
         $stmt = $this->pdo->prepare($sql);
         foreach ($params as $key => $val) {
