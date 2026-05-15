@@ -356,7 +356,6 @@ $categories = $bll->getCategories($limit, $offset);
         }
 
         function startEdit(id, name, desc) {
-            // Hide all other edit modes first
             document.querySelectorAll('.category-row').forEach(row => {
                 row.querySelectorAll('.display-cell').forEach(c => c.style.display = '');
                 row.querySelectorAll('.edit-cell').forEach(c => c.style.display = 'none');
