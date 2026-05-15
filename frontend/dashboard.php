@@ -422,7 +422,6 @@ $laptopCount = $productBll->countProductsByCategoryName('Laptop');
             
     </div>
 
-    <!-- Categories Section -->
     <div>
         <h2 class="section-title">
             <i class="fa-solid fa-list"></i> Danh Mục Sản Phẩm
