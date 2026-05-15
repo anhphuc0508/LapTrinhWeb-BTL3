@@ -77,7 +77,7 @@ class OrderDAL {
     public function getTotalRevenue() {
         $sql = "SELECT SUM(total_amount) FROM orders WHERE status = 'Hoàn thành'";
         $stmt = $this->pdo->query($sql);
-        return $stmt->fetchColumn() ?: 0; // Nếu NULL (chưa có đơn nào) thì trả về 0
+        return $stmt->fetchColumn(); 
     }
    
 }
