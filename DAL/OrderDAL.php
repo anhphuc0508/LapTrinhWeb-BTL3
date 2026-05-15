@@ -65,5 +65,11 @@ class OrderDAL {
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([$order_id, $order_id]);
     }
+
+    public function updateOrderStatus($order_id, $status) {
+        $sql = "UPDATE orders SET status = ? WHERE order_id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([$status, $order_id]);
+    }
 }
 ?>

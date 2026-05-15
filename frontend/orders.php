@@ -108,9 +108,12 @@ function statusSlug($status) {
                                     <td><?= htmlspecialchars($o['customer_name'] ?? 'Khách lẻ') ?></td>
                                     <td><?= date('d/m/Y H:i', strtotime($o['order_date'])) ?></td>
                                     <td>
-                                        <span class="status-badge status-<?= statusSlug($o['status']) ?>">
-                                            <?= htmlspecialchars($o['status']) ?>
-                                        </span>
+                                        <select class="form-select form-select-sm status-badge status-<?= statusSlug($o['status']) ?>" onchange="updateOrderStatus(<?= $o['order_id'] ?>, this)" style="cursor: pointer; width: auto; font-weight: 600; border: none;">
+                                            <option value="Chờ xác nhận" <?= $o['status'] === 'Chờ xác nhận' ? 'selected' : '' ?> class="status-cho-xac-nhan bg-white text-dark">Chờ xác nhận</option>
+                                            <option value="Đang xử lý" <?= $o['status'] === 'Đang xử lý' ? 'selected' : '' ?> class="status-dang-xu-ly bg-white text-dark">Đang xử lý</option>
+                                            <option value="Hoàn thành" <?= $o['status'] === 'Hoàn thành' ? 'selected' : '' ?> class="status-hoan-thanh bg-white text-dark">Hoàn thành</option>
+                                            <option value="Đã hủy" <?= $o['status'] === 'Đã hủy' ? 'selected' : '' ?> class="status-da-huy bg-white text-dark">Đã hủy</option>
+                                        </select>
                                     </td>
                                     <td><strong class="text-danger"><?= number_format($o['total_amount'] ?? 0, 0, ',', '.') ?> đ</strong></td>
                                     <td><?= htmlspecialchars($o['staff_name'] ?? '-') ?></td>
@@ -272,6 +275,37 @@ function statusSlug($status) {
             .catch(err => {
                 document.getElementById('orderDetailsBody').innerHTML = '<tr><td colspan="5" class="text-center text-danger">Lỗi khi tải dữ liệu!</td></tr>';
                 console.error('Fetch error:', err);
+            });
+        }
+
+        function updateOrderStatus(orderId, selectElement) {
+            const newStatus = selectElement.value;
+            const formData = new FormData();
+            formData.append('action', 'update_status');
+            formData.append('order_id', orderId);
+            formData.append('status', newStatus);
+
+            fetch('../API/OrderAPI.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(res => {
+                if (res.status === 'success') {
+                    selectElement.className = 'form-select form-select-sm status-badge';
+                    if (newStatus === 'Chờ xác nhận') selectElement.classList.add('status-cho-xac-nhan');
+                    else if (newStatus === 'Đang xử lý') selectElement.classList.add('status-dang-xu-ly');
+                    else if (newStatus === 'Hoàn thành') selectElement.classList.add('status-hoan-thanh');
+                    else if (newStatus === 'Đã hủy') selectElement.classList.add('status-da-huy');
+                    
+                    alert('Cập nhật trạng thái thành công!');
+                } else {
+                    alert('Lỗi: ' + res.message);
+                }
+            })
+            .catch(err => {
+                console.error('Fetch error:', err);
+                alert('Có lỗi xảy ra khi cập nhật trạng thái!');
             });
         }
     </script>

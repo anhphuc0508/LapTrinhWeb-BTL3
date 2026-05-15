@@ -24,6 +24,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             exit;
         }
+        elseif ($action === 'update_status') {
+            $order_id = $_POST['order_id'] ?? null;
+            $status = $_POST['status'] ?? null;
+            if ($order_id && $status) {
+                $result = $bll->updateOrderStatus($order_id, $status);
+                if ($result) {
+                    echo json_encode(['status' => 'success', 'message' => 'Cập nhật trạng thái thành công']);
+                } else {
+                    echo json_encode(['status' => 'error', 'message' => 'Cập nhật trạng thái thất bại']);
+                }
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Thiếu thông tin đơn hàng hoặc trạng thái']);
+            }
+            exit;
+        }
         else {
             echo json_encode(['status' => 'error', 'message' => 'Invalid action']);
             exit;

@@ -62,7 +62,6 @@ $categories = $bll->getCategories();
         .stat-info h3 { font-size: 26px; font-weight: 700; margin-bottom: 2px; }
         .stat-info p { font-size: 13px; color: var(--text-muted); margin: 0; }
 
-        /* Inline edit row */
         .edit-row input, .edit-row textarea {
             width: 100%;
             padding: 6px 10px;
@@ -396,7 +395,6 @@ $categories = $bll->getCategories();
                 .catch(() => showToast('Lỗi kết nối server!', 'error'));
         }
 
-        // =================== DELETE ===================
         function deleteCategory(id, name) {
             deleteTargetId = id;
             document.getElementById('deleteCatName').textContent = name;
@@ -429,7 +427,6 @@ $categories = $bll->getCategories();
                 .catch(() => showToast('Lỗi kết nối server!', 'error'));
         }
 
-        // =================== SEARCH / FILTER ===================
         function filterCategories() {
             const query = document.getElementById('searchInput').value.toLowerCase();
             const rows = document.querySelectorAll('.category-row');

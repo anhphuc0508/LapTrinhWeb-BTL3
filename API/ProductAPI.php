@@ -88,33 +88,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['error'] = "Lỗi xử lý: " . $e->getMessage();
     }
 
-    header('Location: ../frontend/index.php');
-    exit;
-} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'export') {
-    $bll = new ProductBLL($pdo);
-    $products = $bll->getProducts();
-    
-    header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename=products_' . date('Ymd_His') . '.csv');
-    
-    echo "\xEF\xBB\xBF";
-    
-    $output = fopen('php://output', 'w');
-    fputcsv($output, ['ID', 'Tên sản phẩm', 'Danh mục', 'Nhà cung cấp', 'Giá bán (VNĐ)', 'Tồn kho', 'Ngày tạo']);
-    
-    foreach ($products as $p) {
-        fputcsv($output, [
-            $p['product_id'],
-            $p['product_name'],
-            $p['category_name'] ?? '',
-            $p['supplier_name'] ?? '',
-            $p['unit_price'],
-            $p['stock_quantity'],
-            $p['created_at']
-        ]);
-    }
-    fclose($output);
-    exit;
 } else {
     header('Location: ../frontend/index.php');
     exit;

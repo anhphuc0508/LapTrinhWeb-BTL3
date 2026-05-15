@@ -53,5 +53,9 @@ class OrderBLL {
             throw $e;
         }
     }
+
+    public function updateOrderStatus($order_id, $status) {
+        return $this->dal->updateOrderStatus($order_id, $status);
     }
-    ?>
+}
+?>

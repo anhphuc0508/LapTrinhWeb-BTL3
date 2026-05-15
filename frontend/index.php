@@ -69,9 +69,7 @@ $products = $bll->getProducts($search);
                     <p>Quản lý kho hàng, thông tin sản phẩm và giá cả.</p>
                 </div>
                 <div class="header-actions">
-                    <a href="../API/ProductAPI.php?action=export" class="btn btn-success me-2" style="text-decoration: none;">
-                        <i class="fa-solid fa-file-excel"></i> Xuất CSV
-                    </a>
+                   
                     <a href="product_form.php" class="btn btn-primary" style="text-decoration: none;">
                         <i class="fa-solid fa-plus"></i> Thêm Sản Phẩm Mới
                     </a>
@@ -139,7 +137,6 @@ $products = $bll->getProducts($search);
         </main>
     </div>
 
-    <!-- Modal Xem Biến Thể -->
     <div class="modal fade" id="variantModal" tabindex="-1" aria-labelledby="variantModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -169,7 +166,6 @@ $products = $bll->getProducts($search);
             modalLabel.textContent = `Biến Thể: ${productName}`;
             variantContent.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Đang tải...</span></div></div>';
             
-            // Gửi yêu cầu lấy biến thể qua AJAX
             fetch('../API/ProductAPI.php', {
                 method: 'POST',
                 headers: {
