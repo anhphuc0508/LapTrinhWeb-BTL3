@@ -10,8 +10,6 @@ class ProductBLL {
         $this->pdo = $pdo;
     }
 
-
-
     public function getProducts($search = '', $category_id = '', $limit = 10, $offset = 0) {
         return $this->dal->getProducts($search, $category_id, $limit, $offset);
     }

@@ -53,25 +53,25 @@ class SupplierDAL {
         return $stmt->fetchColumn();
     }
 
-    public function addSupplier($name, $contact_person, $phone, $email, $address, $tax_code) {
+    public function addSupplier($name, $phone, $email, $address) {
         $stmt = $this->pdo->prepare("
-            INSERT INTO suppliers (supplier_name, contact_person, phone, email, address, tax_code) 
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO suppliers (supplier_name, phone, email, address) 
+            VALUES (?, ?, ?, ?)
         ");
-        return $stmt->execute([$name, $contact_person, $phone, $email, $address, $tax_code]);
+        return $stmt->execute([$name, $phone, $email, $address]);
     }
 
-    public function updateSupplier($id, $name, $contact_person, $phone, $email, $address, $tax_code) {
+    public function updateSupplier($id, $name, $phone, $email, $address) {
         $stmt = $this->pdo->prepare("
             UPDATE suppliers 
-            SET supplier_name = ?, contact_person = ?, phone = ?, email = ?, address = ?, tax_code = ? 
+            SET supplier_name = ?, phone = ?, email = ?, address = ?
             WHERE supplier_id = ?
         ");
-        return $stmt->execute([$name, $contact_person, $phone, $email, $address, $tax_code, $id]);
+        return $stmt->execute([$name,  $phone, $email, $address, $id]);
     }
 
     public function deleteSupplier($id) {
-        // Kiểm tra xem nhà cung cấp này có sản phẩm không
+       
         $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM products WHERE supplier_id = ?");
         $stmt->execute([$id]);
         if ($stmt->fetchColumn() > 0) {
