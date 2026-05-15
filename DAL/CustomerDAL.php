@@ -19,7 +19,7 @@ class CustomerDAL {
 
         if (!empty($search)) {
             $sql .= " AND (c.customer_name LIKE :search OR c.phone LIKE :search)";
-            $params[':search'] = "%$search%";
+            $params[':search'] = "%$search%";   
         }
 
         $sql .= " GROUP BY c.customer_id ORDER BY c.customer_id DESC LIMIT :limit OFFSET :offset";
