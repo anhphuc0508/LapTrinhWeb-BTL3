@@ -83,22 +83,8 @@ $fullname = !empty($_SESSION['full_name']) ? $_SESSION['full_name'] : ($_SESSION
                 </a>
             </div>
 
-            <?php if (isset($_SESSION['success'])): ?>
-                <div class="alert alert-success" role="alert" style="padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; color: white; font-weight: 500;">
-                    <?= $_SESSION['success'] ?>
-                </div>
-                <?php unset($_SESSION['success']); ?>
-            <?php endif; ?>
-
-            <?php if (isset($_SESSION['error'])): ?>
-                <div class="alert alert-danger" role="alert" style="padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; color: white; font-weight: 500;">
-                    <?= $_SESSION['error'] ?>
-                </div>
-                <?php unset($_SESSION['error']); ?>
-            <?php endif; ?>
-
             <div class="form-container">
-                <form method="POST" action="../API/ProductAPI.php">
+                <form id="mainProductForm" onsubmit="submitAjaxForm(event, 'mainProductForm')">
                     <input type="hidden" name="action" value="<?= $id ? 'update' : 'add' ?>">
                     <?php if ($id): ?>
                         <input type="hidden" name="product_id" value="<?= $id ?>">
@@ -183,14 +169,9 @@ $fullname = !empty($_SESSION['full_name']) ? $_SESSION['full_name'] : ($_SESSION
                                             <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editVariantModal" onclick='editVariant(<?= json_encode($v) ?>)'>
                                                 <i class="fa-solid fa-edit"></i>
                                             </button>
-                                            <form method="POST" action="../API/ProductAPI.php" style="display:inline;" onsubmit="return confirm('Xóa biến thể này?');">
-                                                <input type="hidden" name="action" value="deleteVariant">
-                                                <input type="hidden" name="variant_id" value="<?= $v['variant_id'] ?>">
-                                                <input type="hidden" name="product_id" value="<?= $id ?>">
-                                                <button type="submit" class="btn btn-sm btn-danger">
-                                                    <i class="fa-solid fa-trash"></i>
-                                                </button>
-                                            </form>
+                                            <button type="button" class="btn btn-sm btn-danger" onclick="deleteVariant(<?= $v['variant_id'] ?>, <?= $id ?>)">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
                                         </td>
                                     </tr>
                                     <?php endforeach; ?>
@@ -204,7 +185,7 @@ $fullname = !empty($_SESSION['full_name']) ? $_SESSION['full_name'] : ($_SESSION
 
                 <div class="border-top pt-4">
                     <h5 class="mb-3">Thêm biến thể mới:</h5>
-                    <form method="POST" action="../API/ProductAPI.php">
+                    <form id="addVariantForm" onsubmit="submitAjaxForm(event, 'addVariantForm')">
                         <input type="hidden" name="action" value="addVariant">
                         <input type="hidden" name="product_id" value="<?= $id ?>">
                         
@@ -245,7 +226,7 @@ $fullname = !empty($_SESSION['full_name']) ? $_SESSION['full_name'] : ($_SESSION
                     <h5 class="modal-title" id="editVariantModalLabel">Chỉnh sửa biến thể</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form method="POST" action="../API/ProductAPI.php">
+                <form id="editVariantForm" onsubmit="submitAjaxForm(event, 'editVariantForm')">
                     <input type="hidden" name="action" value="updateVariant">
                     <input type="hidden" name="product_id" value="<?= $id ?>">
                     <input type="hidden" name="variant_id" id="editVariantId">
@@ -285,6 +266,61 @@ $fullname = !empty($_SESSION['full_name']) ? $_SESSION['full_name'] : ($_SESSION
             document.getElementById('editVariantName').value = variant.variant_name || '';
             document.getElementById('editVariantPrice').value = variant.price || 0;
             document.getElementById('editVariantStock').value = variant.stock_quantity || 0;
+        }
+
+        async function submitAjaxForm(event, formId) {
+            event.preventDefault(); 
+            
+            const form = document.getElementById(formId);
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch('../API/ProductAPI.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    alert(data.message || 'Thành công!'); 
+                    if (data.new_product_id) {
+                        window.location.href = 'product_form.php?product_id=' + data.new_product_id;
+                    } else {
+                        location.reload();
+                    }
+                } else {
+                    alert('LỖI: ' + (data.message || 'Xử lý thất bại!'));
+                }
+            } catch (error) {
+                console.error('Lỗi API:', error);
+                alert('Không thể kết nối đến máy chủ!');
+            }
+        }
+
+        async function deleteVariant(variantId, productId) {
+            if (!confirm('Bạn có chắc chắn muốn xóa biến thể này?')) return;
+            
+            const fd = new FormData();
+            fd.append('action', 'deleteVariant');
+            fd.append('variant_id', variantId);
+            fd.append('product_id', productId);
+
+            try {
+                const response = await fetch('../API/ProductAPI.php', {
+                    method: 'POST',
+                    body: fd 
+                });
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    location.reload();
+                } else {
+                    alert('LỖI: ' + (data.message || 'Không thể xóa'));
+                }
+            } catch (error) {
+                console.error('Lỗi API:', error);
+                alert('Có lỗi xảy ra khi xóa!');
+            }
         }
     </script>
 </body>

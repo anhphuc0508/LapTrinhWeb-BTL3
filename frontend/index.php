@@ -23,11 +23,6 @@ $products = $bll->getProducts($search);
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../style.css">
-    <style>
-        .alert { padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; color: white; font-weight: 500; }
-        .alert-success { background-color: var(--success-color); }
-        .alert-error { background-color: var(--danger-color); }
-    </style>
 </head>
 <body>
     <div class="app-container">
@@ -76,16 +71,6 @@ $products = $bll->getProducts($search);
                 </div>
             </div>
 
-            <?php if (isset($_SESSION['success'])): ?>
-                <div class="alert alert-success"><?= $_SESSION['success'] ?></div>
-                <?php unset($_SESSION['success']); ?>
-            <?php endif; ?>
-
-            <?php if (isset($_SESSION['error'])): ?>
-                <div class="alert alert-error"><?= $_SESSION['error'] ?></div>
-                <?php unset($_SESSION['error']); ?>
-            <?php endif; ?>
-
             <div class="table-container table-responsive bg-white rounded shadow-sm p-3">
                 <table class="table table-hover table-bordered align-middle">
                     <thead>
@@ -105,7 +90,7 @@ $products = $bll->getProducts($search);
                             <?php foreach ($products as $p): ?>
                                 <tr>
                                     <td>#<?= $p['product_id'] ?></td>
-                                    <td><strong style="cursor: pointer; color: #0066cc;" onclick="showVariants(<?= $p['product_id'] ?>, '<?= htmlspecialchars($p['product_name']) ?>')" data-bs-toggle="modal" data-bs-target="#variantModal" title="Click để xem biến thể"><?= htmlspecialchars($p['product_name']) ?></strong></td>
+                                    <td><strong style="cursor: pointer; color: #0066cc;" onclick="showVariants(<?= $p['product_id'] ?>, '<?= htmlspecialchars(addslashes($p['product_name'])) ?>')" data-bs-toggle="modal" data-bs-target="#variantModal" title="Click để xem biến thể"><?= htmlspecialchars($p['product_name']) ?></strong></td>
                                     <td><?= htmlspecialchars($p['category_name'] ?? '-') ?></td>
                                     <td><?= htmlspecialchars($p['supplier_name'] ?? '-') ?></td>
                                     <td><strong class="text-danger"><?= number_format($p['unit_price'] ?? 0, 0, ',', '.') ?> đ</strong></td>
@@ -113,17 +98,13 @@ $products = $bll->getProducts($search);
                                     <td><?= date('d/m/Y H:i', strtotime($p['created_at'])) ?></td>
                                     <td class="action-btns">
                                         <a href="product_form.php?product_id=<?= $p['product_id'] ?>" class="btn btn-icon"><i class="fa-solid fa-pen"></i></a>
-                                        <form method="POST" action="../API/ProductAPI.php" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn nhân bản sản phẩm này?');">
-                                            <input type="hidden" name="action" value="clone">
-                                            <input type="hidden" name="product_id" value="<?= $p['product_id'] ?>">
-                                            <button type="submit" class="btn btn-warning text-white btn-sm" title="Nhân bản"><i class="fa-solid fa-copy"></i></button>
-                                        </form>
+                                        <button type="button" class="btn btn-warning text-white btn-sm" title="Nhân bản" onclick="handleAction('clone', <?= $p['product_id'] ?>)">
+                                            <i class="fa-solid fa-copy"></i>
+                                        </button>
                                         <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-                                        <form method="POST" action="../API/ProductAPI.php" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa?');">
-                                            <input type="hidden" name="action" value="delete">
-                                            <input type="hidden" name="product_id" value="<?= $p['product_id'] ?>">
-                                            <button type="submit" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
-                                        </form>
+                                        <button type="button" class="btn btn-danger btn-sm" onclick="handleAction('delete', <?= $p['product_id'] ?>)">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
                                         <?php endif; ?>
                                     </td>
                                 </tr>
@@ -134,3 +115,106 @@ $products = $bll->getProducts($search);
                     </tbody>
                 </table>
             </div>
+
+        </main>
+    </div>
+    <div class="modal fade" id="variantModal" tabindex="-1" aria-labelledby="variantModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="variantModalLabel">Biến thể</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <table class="table table-striped m-0">
+                        <thead>
+                            <tr>
+                                <th>SKU</th>
+                                <th>Tên Phân Loại</th>
+                                <th>Giá bán</th>
+                                <th>Tồn kho</th>
+                            </tr>
+                        </thead>
+                        <tbody id="variantTableBody">
+                            <tr><td colspan="4" class="text-center">Đang tải...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        async function showVariants(productId, productName) {
+            document.getElementById('variantModalLabel').innerText = 'Biến thể của: ' + productName;
+            const tbody = document.getElementById('variantTableBody');
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center">Đang tải...</td></tr>';
+            
+            const formData = new FormData();
+            formData.append('action', 'getVar');
+            formData.append('product_id', productId);
+            
+            try {
+                const response = await fetch('../API/ProductAPI.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const res = await response.json();
+                const data = res.data;
+                
+                tbody.innerHTML = '';
+                if (data && data.length > 0) {
+                    data.forEach(v => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${v.sku || '-'}</td>
+                                <td>${v.variant_name || '-'}</td>
+                                <td class="text-danger"><strong>${new Intl.NumberFormat('vi-VN').format(v.price)} đ</strong></td>
+                                <td>${v.stock_quantity}</td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center">Không có biến thể nào.</td></tr>';
+                }
+            } catch (error) {
+                console.error('Lỗi API:', error);
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Lỗi tải dữ liệu.</td></tr>';
+            }
+        }
+
+        async function handleAction(action, productId) {
+            let msg;
+                if (action === 'delete') {
+                    msg = 'Bạn có chắc chắn muốn xóa?';
+                } else {
+                    msg = 'Bạn có chắc chắn muốn nhân bản sản phẩm này?';
+                }
+            if (!confirm(msg)) return;
+
+            const formData = new FormData();
+            formData.append('action', action);
+            formData.append('product_id', productId);
+
+            try {
+                const response = await fetch('../API/ProductAPI.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert('Lỗi: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Lỗi API:', error);
+                alert('Lỗi kết nối máy chủ!');
+            }
+        }
+    </script>
+</body>
+</html>

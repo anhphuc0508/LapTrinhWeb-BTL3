@@ -12,34 +12,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $data['user_id'] = $_SESSION['user_id'] ?? null;
 
             if ($action === 'add') {
-                $bll->addProduct($data);
-                $_SESSION['success'] = "Thêm sản phẩm thành công!";
+                $new_id = $bll->addProduct($data);
+                echo json_encode(['status' => 'success', 'message' => 'Thêm sản phẩm thành công!', 'new_product_id' => $new_id]);
             } else {
                 $bll->updateProduct($data);
-                $_SESSION['success'] = "Cập nhật sản phẩm thành công!";
+                echo json_encode(['status' => 'success', 'message' => 'Cập nhật sản phẩm thành công!']);
             }
+            exit;
         }
         elseif ($action === 'delete') {
             if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
                 $bll->deleteProduct($_POST['product_id']);
-                $_SESSION['success'] = "Xóa sản phẩm thành công!";
+                echo json_encode(['status' => 'success', 'message' => 'Xóa sản phẩm thành công!']);
             } else {
-                $_SESSION['error'] = "Bạn không có quyền xóa sản phẩm!";
+                echo json_encode(['status' => 'error', 'message' => 'Bạn không có quyền xóa sản phẩm!']);
             }
+            exit;
         }
         elseif ($action === 'clone') {
             if ($bll->cloneProduct($_POST['product_id'])) {
-                $_SESSION['success'] = "Nhân bản sản phẩm thành công!";
+                echo json_encode(['status' => 'success', 'message' => 'Nhân bản sản phẩm thành công!']);
             } else {
-                $_SESSION['error'] = "Nhân bản sản phẩm thất bại!";
+                echo json_encode(['status' => 'error', 'message' => 'Nhân bản sản phẩm thất bại!']);
             }
+            exit;
         }
         elseif($action === 'getVar'){
             $id = $_POST['product_id'] ?? null; 
             $data = $bll->getProductVariants($id); 
             
             header('Content-Type: application/json');
-            echo json_encode($data);
+            echo json_encode(['status' => 'success', 'data' => $data]);
             exit;
         }
         elseif($action === 'addVariant'){
@@ -49,14 +52,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 $result = $bll->addVariant($_POST);
                 if ($result) {
-                    $_SESSION['success'] = "Thêm biến thể thành công!";
+                    echo json_encode(['status' => 'success', 'message' => 'Thêm biến thể thành công!']);
                 } else {
-                    $_SESSION['error'] = "Thêm biến thể thất bại!";
+                    echo json_encode(['status' => 'error', 'message' => 'Thêm biến thể thất bại!']);
                 }
             } catch (Exception $e) {
-                $_SESSION['error'] = "Lỗi: " . $e->getMessage();
+                echo json_encode(['status' => 'error', 'message' => 'Lỗi: ' . $e->getMessage()]);
             }
-            header('Location: ../frontend/product_form.php?product_id=' . $_POST['product_id']);
             exit;
         }
         elseif($action === 'updateVariant'){
@@ -66,26 +68,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 $result = $bll->updateVariant($_POST);
                 if ($result) {
-                    $_SESSION['success'] = "Cập nhật biến thể thành công!";
+                    echo json_encode(['status' => 'success', 'message' => 'Cập nhật biến thể thành công!']);
                 } else {
-                    $_SESSION['error'] = "Cập nhật biến thể thất bại!";
+                    echo json_encode(['status' => 'error', 'message' => 'Cập nhật biến thể thất bại!']);
                 }
             } catch (Exception $e) {
-                $_SESSION['error'] = "Lỗi: " . $e->getMessage();
+                echo json_encode(['status' => 'error', 'message' => 'Lỗi: ' . $e->getMessage()]);
             }
-            header('Location: ../frontend/product_form.php?product_id=' . $_POST['product_id']);
             exit;
         }
         elseif($action === 'deleteVariant'){
             $variant_id = $_POST['variant_id'] ?? null;
-            $product_id = $_POST['product_id'] ?? null;
             $bll->deleteVariant($variant_id);
-            $_SESSION['success'] = "Xóa biến thể thành công!";
-            header('Location: ../frontend/product_form.php?product_id=' . $product_id);
+            echo json_encode(['status' => 'success', 'message' => 'Xóa biến thể thành công!']);
             exit;
         }
     } catch (Exception $e) {
-        $_SESSION['error'] = "Lỗi xử lý: " . $e->getMessage();
+        echo json_encode(['status' => 'error', 'message' => 'Lỗi xử lý: ' . $e->getMessage()]);
     }
 
 } else {

@@ -192,7 +192,7 @@ function statusSlug($status) {
             }
         });
 
-        function viewOrderDetails(orderId) {
+        async function viewOrderDetails(orderId) {
             console.log('Viewing order:', orderId);
             
             if (!orderModal) {
@@ -206,33 +206,23 @@ function statusSlug($status) {
             }
 
             document.getElementById('modalOrderId').innerText = '#' + orderId;
-            document.getElementById('orderDetailsBody').innerHTML = '<tr><td colspan="5" class="text-center"><div class="spinner-border text-primary" role="status"></div> Đang tải...</td></tr>';
             
-           
-            document.getElementById('modalCustomerName').innerText = '...';
-            document.getElementById('modalCustomerPhone').innerText = '...';
-            document.getElementById('modalCustomerAddress').innerText = '...';
-            document.getElementById('modalOrderDate').innerText = '...';
-            document.getElementById('modalStatus').innerText = '...';
-            document.getElementById('modalStaffName').innerText = '...';
 
-      
             orderModal.show();
 
-         
             const formData = new FormData();
             formData.append('action', 'get_details');
             formData.append('order_id', orderId);
 
-            fetch('../API/OrderAPI.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
+            try {
+                const response = await fetch('../API/OrderAPI.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
                 if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(res => {
+                const res = await response.json();
+                
                 console.log('API Response:', res);
                 const tbody = document.getElementById('orderDetailsBody');
                 tbody.innerHTML = '';
@@ -271,26 +261,26 @@ function statusSlug($status) {
                 } else {
                     tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Lỗi: ' + (res.message || 'Không tìm thấy dữ liệu') + '</td></tr>';
                 }
-            })
-            .catch(err => {
+            } catch (err) {
                 document.getElementById('orderDetailsBody').innerHTML = '<tr><td colspan="5" class="text-center text-danger">Lỗi khi tải dữ liệu!</td></tr>';
                 console.error('Fetch error:', err);
-            });
+            }
         }
 
-        function updateOrderStatus(orderId, selectElement) {
+        async function updateOrderStatus(orderId, selectElement) {
             const newStatus = selectElement.value;
             const formData = new FormData();
             formData.append('action', 'update_status');
             formData.append('order_id', orderId);
             formData.append('status', newStatus);
 
-            fetch('../API/OrderAPI.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(res => {
+            try {
+                const response = await fetch('../API/OrderAPI.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const res = await response.json();
+
                 if (res.status === 'success') {
                     selectElement.className = 'form-select form-select-sm status-badge';
                     if (newStatus === 'Chờ xác nhận') selectElement.classList.add('status-cho-xac-nhan');
@@ -302,11 +292,10 @@ function statusSlug($status) {
                 } else {
                     alert('Lỗi: ' + res.message);
                 }
-            })
-            .catch(err => {
+            } catch (err) {
                 console.error('Fetch error:', err);
                 alert('Có lỗi xảy ra khi cập nhật trạng thái!');
-            });
+            }
         }
     </script>
 </body>

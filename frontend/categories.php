@@ -265,7 +265,6 @@ $categories = $bll->getCategories();
         </div>
     </div>
 
-    <!-- Confirm Delete Modal -->
     <div class="modal-overlay" id="deleteModal">
         <div class="modal-content" style="max-width: 450px;">
             <div class="modal-header">
@@ -295,7 +294,6 @@ $categories = $bll->getCategories();
         const API_URL = '../API/CategoryAPI.php';
         let deleteTargetId = null;
 
-        // =================== TOAST ===================
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -303,7 +301,6 @@ $categories = $bll->getCategories();
             setTimeout(() => { toast.classList.remove('show'); }, 3000);
         }
 
-        // =================== ADD ===================
         function openAddModal() {
             document.getElementById('addCategoryName').value = '';
             document.getElementById('addDescription').value = '';
@@ -315,7 +312,7 @@ $categories = $bll->getCategories();
             document.getElementById('addModal').classList.remove('show');
         }
 
-        function addCategory() {
+        async function addCategory() {
             const name = document.getElementById('addCategoryName').value.trim();
             const desc = document.getElementById('addDescription').value.trim();
 
@@ -330,23 +327,23 @@ $categories = $bll->getCategories();
             formData.append('category_name', name);
             formData.append('description', desc);
 
-            fetch(API_URL, { method: 'POST', body: formData })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        showToast(data.message, 'success');
-                        closeAddModal();
-                        setTimeout(() => location.reload(), 800);
-                    } else {
-                        showToast(data.message, 'error');
-                    }
-                })
-                .catch(() => showToast('Lỗi kết nối server!', 'error'));
+            try {
+                const response = await fetch(API_URL, { method: 'POST', body: formData });
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    showToast(data.message, 'success');
+                    closeAddModal();
+                    setTimeout(() => location.reload(), 800);
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch (error) {
+                showToast('Lỗi kết nối server!', 'error');
+            }
         }
 
-        // =================== INLINE EDIT ===================
         function startEdit(id, name, desc) {
-            // Hide all other edit modes first
             document.querySelectorAll('.category-row').forEach(row => {
                 row.querySelectorAll('.display-cell').forEach(c => c.style.display = '');
                 row.querySelectorAll('.edit-cell').forEach(c => c.style.display = 'none');
@@ -367,7 +364,7 @@ $categories = $bll->getCategories();
             row.classList.remove('edit-row');
         }
 
-        function saveEdit(id) {
+        async function saveEdit(id) {
             const name = document.getElementById('editName-' + id).value.trim();
             const desc = document.getElementById('editDesc-' + id).value.trim();
 
@@ -382,17 +379,19 @@ $categories = $bll->getCategories();
             formData.append('category_name', name);
             formData.append('description', desc);
 
-            fetch(API_URL, { method: 'POST', body: formData })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        showToast(data.message, 'success');
-                        setTimeout(() => location.reload(), 800);
-                    } else {
-                        showToast(data.message, 'error');
-                    }
-                })
-                .catch(() => showToast('Lỗi kết nối server!', 'error'));
+            try {
+                const response = await fetch(API_URL, { method: 'POST', body: formData });
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    showToast(data.message, 'success');
+                    setTimeout(() => location.reload(), 800);
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch (error) {
+                showToast('Lỗi kết nối server!', 'error');
+            }
         }
 
         function deleteCategory(id, name) {
@@ -406,25 +405,27 @@ $categories = $bll->getCategories();
             deleteTargetId = null;
         }
 
-        function confirmDelete() {
+        async function confirmDelete() {
             if (!deleteTargetId) return;
 
             const formData = new FormData();
             formData.append('action', 'delete');
             formData.append('category_id', deleteTargetId);
 
-            fetch(API_URL, { method: 'POST', body: formData })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        showToast(data.message, 'success');
-                        closeDeleteModal();
-                        setTimeout(() => location.reload(), 800);
-                    } else {
-                        showToast(data.message, 'error');
-                    }
-                })
-                .catch(() => showToast('Lỗi kết nối server!', 'error'));
+            try {
+                const response = await fetch(API_URL, { method: 'POST', body: formData });
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    showToast(data.message, 'success');
+                    closeDeleteModal();
+                    setTimeout(() => location.reload(), 800);
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch (error) {
+                showToast('Lỗi kết nối server!', 'error');
+            }
         }
 
         function filterCategories() {
@@ -443,24 +444,17 @@ $categories = $bll->getCategories();
             document.getElementById('totalCategories').textContent = visibleCount;
         }
 
-        // Keyboard shortcut: Enter to submit in modal
         document.getElementById('addCategoryName').addEventListener('keydown', function(e) {
             if (e.key === 'Enter') addCategory();
         });
 
-        // Close modals on overlay click
         document.querySelectorAll('.modal-overlay').forEach(modal => {
             modal.addEventListener('click', function(e) {
                 if (e.target === this) this.classList.remove('show');
             });
         });
 
-        // Close modals on Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                document.querySelectorAll('.modal-overlay.show').forEach(m => m.classList.remove('show'));
-            }
-        });
+        
     </script>
 </body>
 </html>
