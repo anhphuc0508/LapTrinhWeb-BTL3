@@ -193,7 +193,6 @@ function statusSlug($status) {
         });
 
         async function viewOrderDetails(orderId) {
-            console.log('Viewing order:', orderId);
             
             if (!orderModal) {
                 const modalElement = document.getElementById('orderModal');
@@ -229,7 +228,7 @@ function statusSlug($status) {
                 
                 if (res.status === 'success' && res.order) {
                     const o = res.order;
-                    document.getElementById('modalCustomerName').innerText = o.customer_name || 'Khách lẻ';
+                    document.getElementById('modalCustomerName').innerText = o.customer_name || '-';
                     document.getElementById('modalCustomerPhone').innerText = o.phone || '-';
                     document.getElementById('modalCustomerAddress').innerText = o.address || '-';
                     document.getElementById('modalOrderDate').innerText = o.order_date ? new Date(o.order_date).toLocaleString('vi-VN') : '-';
@@ -245,7 +244,7 @@ function statusSlug($status) {
                             tbody.innerHTML += `
                                 <tr>
                                     <td>#${item.product_id}</td>
-                                    <td><strong>${item.product_name || 'Sản phẩm không xác định'}</strong></td>
+                                    <td><strong>${item.product_name}</strong></td>
                                     <td>${item.quantity}</td>
                                     <td>${new Intl.NumberFormat('vi-VN').format(item.unit_price)} đ</td>
                                     <td><strong class="text-danger">${new Intl.NumberFormat('vi-VN').format(subtotal)} đ</strong></td>
