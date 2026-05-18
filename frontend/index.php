@@ -31,6 +31,7 @@ $products = $bll->getProducts($search);
                 <h2><i class="fa-solid fa-cube"></i> Trang Quản Lý</h2>
             </div>
             <ul class="nav-links">
+                <li><a href="dashboard.php"><i class="fa-solid fa-chart-pie"></i> Tổng quan</a></li>
                 <li><a href="index.php" class="active"><i class="fa-solid fa-box"></i> Sản phẩm</a></li>
                 <li><a href="categories.php"><i class="fa-solid fa-tags"></i> Danh mục</a></li>
                 <li><a href="orders.php"><i class="fa-solid fa-cart-shopping"></i> Đơn hàng</a></li>

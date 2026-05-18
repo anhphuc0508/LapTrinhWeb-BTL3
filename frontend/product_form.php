@@ -51,6 +51,7 @@ $fullname = !empty($_SESSION['full_name']) ? $_SESSION['full_name'] : ($_SESSION
                 <h2><i class="fa-solid fa-cube"></i> Trang Quản Lý</h2>
             </div>
             <ul class="nav-links">
+                <li><a href="dashboard.php"><i class="fa-solid fa-chart-pie"></i> Tổng quan</a></li>
                 <li><a href="index.php"><i class="fa-solid fa-box"></i> Sản phẩm</a></li>
 
             </ul>

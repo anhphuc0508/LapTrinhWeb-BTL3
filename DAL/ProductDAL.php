@@ -128,5 +128,23 @@ class ProductDAL {
         $stmt = $this->pdo->prepare("DELETE FROM product_variants WHERE variant_id = ?");
         return $stmt->execute([$variant_id]);
     }
+
+    public function getTopSellingProducts($limit = 10) {
+        $sql = "
+            SELECT p.product_id, p.product_name, c.category_name, p.unit_price, p.stock_quantity, SUM(od.quantity) as total_sold
+            FROM products p
+            JOIN order_details od ON p.product_id = od.product_id
+            JOIN orders o ON od.order_id = o.order_id
+            LEFT JOIN categories c ON p.category_id = c.category_id
+            WHERE o.status != 'Đã hủy'
+            GROUP BY p.product_id, p.product_name, c.category_name, p.unit_price, p.stock_quantity
+            ORDER BY total_sold DESC
+            LIMIT :limit
+        ";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?>

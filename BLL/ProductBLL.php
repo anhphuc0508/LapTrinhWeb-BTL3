@@ -66,5 +66,9 @@ class ProductBLL {
     public function deleteVariant($variant_id) {
         return $this->dal->deleteVariant($variant_id);
     }
+
+    public function getTopSellingProducts($limit = 10) {
+        return $this->dal->getTopSellingProducts($limit);
+    }
 }
 ?>
